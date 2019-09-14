@@ -5,18 +5,19 @@ import mysql.connector
 
 
 def myloading():
-	cfgpath = "config.txt"
+	cfgpath = "config-mysql.txt"
 	fconf = open(cfgpath, 'r')
 	tconf = fconf.read()
 	fconf.close()
 	conf_list = tconf.split('\n')
-	username = conf_list[0]
-	password = conf_list[1]
-	hostname = conf_list[2]
-	dbport   = conf_list[3]
-	database = conf_list[4]
-	table_md = conf_list[5]
-	print(table_md)
+	
+	cfgpath_logic = "config.txt"
+	fconf_logic = open(cfgpath_logic, 'r')
+	tconf_logic = fconf_logic.read()
+	fconf_logic.close()
+	conf_list_send = tconf_logic.split('\n')
+	conf_list.append(conf_list_send[1])
+	conf_list.append(conf_list_send[3])
 	return conf_list
 
 
@@ -30,13 +31,34 @@ def config_db(loop_params):
 	table_md = loop_params[5]
 	mydb.autocommit = True
 	mycursor = mydb.cursor()
-	sql = "ALTER TABLE "+table_md+" ADD is_ack INT DEFAULT 0;"
-	print(sql)
-	mycursor.execute(sql)
-	sql = "UPDATE "+table_md+" SET is_ack = 1 WHERE is_ack = 0;"
-	print(sql)
+	print(loop_params[8])
+	if loop_params[8] == "mod":
+		sql = "ALTER TABLE "+table_md+" ADD is_ack INT DEFAULT 0;"
+		print(sql)
+		mycursor.execute(sql)
+		sql = "UPDATE "+table_md+" SET is_ack = 1 WHERE is_ack = 0;"
+		print(sql)
+		mycursor.execute(sql)
+	else:
+		sql = """CREATE TABLE events_notify (
+			id_event int(11) NOT NULL,
+			is_ack tinyint(11) NOT NULL DEFAULT '0')
+			ENGINE=InnoDB DEFAULT CHARSET=utf8;"""
+		print(sql)
+		mycursor.execute(sql)
+		sql = """ALTER TABLE events_notify
+			ADD PRIMARY KEY (id_event);"""
+		print(sql)
+		mycursor.execute(sql)
+		sql = """ALTER TABLE events_notify
+			MODIFY id_event int(11) NOT NULL AUTO_INCREMENT;"""
+		print(sql)
+		mycursor.execute(sql)
+		sql = "CREATE TRIGGER notify_trigger AFTER INSERT ON "+table_md+" FOR EACH ROW INSERT INTO events_notify (id_event, is_ack) VALUES (NULL, '0')"
+		print(sql)
 	mycursor.execute(sql)
 	print("setup completed")
+
 
 if __name__ == "__main__":
 	my_params = myloading()

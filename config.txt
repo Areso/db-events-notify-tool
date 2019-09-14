@@ -1,0 +1,4 @@
+#the second line is reserved for specifying name of script, which works with external service for sending mesages
+sms-ru.py
+#the fourth line is reserved for indication of install method, it is either mod of original table or trigger to new table
+trigger
