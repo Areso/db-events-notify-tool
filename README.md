@@ -10,7 +10,7 @@ This three step installation project allows you to be notified of new inserts in
     <li>edit config-mysql.txt (you can find example in config-mysql-example.txt)</li>
     <li>edit config-sms-ru.txt (you can find example in config-mysql-example.txt)</li>
 </ul></li>
-<li>run python3 installation-mysql.py (if needed, install mysql.connector first)</li>
+<li>run python3 installation-mysql.py (if needed, install mysql.connector first via sudo python3 pip install mysql-connector)</li>
 <li>add mysql-dbevents-notify.py in crontab or systemd to autorun watcher after reboot</li>
 </ol>
 <br>
